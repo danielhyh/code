@@ -2,7 +2,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import BookList from './pages/BookList.vue';
 import BookDetail from './pages/BookDetail.vue';
-
+// 基础路径配置
+const BASE_PATH = '/book_h5/';
 const routes = [
   {
     path: '/',
@@ -29,7 +30,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(BASE_PATH),
   routes
 });
 
@@ -37,7 +38,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 设置文档标题
   document.title = to.meta.title || '带您阅智享阅读器';
-  
+
   // 继续导航
   next();
 });

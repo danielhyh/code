@@ -5,7 +5,7 @@ import { VantResolver } from '@vant/auto-import-resolver'
 import pxtoviewport from 'postcss-px-to-viewport'
 
 export default defineConfig({
-  base: './', // 添加这行，使用相对路径
+  base: '/book_h5/', // 子路径
   plugins: [
     vue(),
     Components({

@@ -4,23 +4,23 @@
     <div class="app-header">
       <h1 class="page-title">带您阅智享阅读器</h1>
     </div>
-    
+
     <!-- 加载状态 -->
     <div v-if="isLoading" class="loading-container">
       <van-loading type="spinner" color="#8D1D21" />
       <p class="loading-text">加载书籍信息...</p>
     </div>
-    
+
     <!-- 错误状态 -->
     <div v-else-if="hasError" class="error-container">
       <van-icon name="warning-o" size="48" color="#8D1D21" />
       <p class="error-text">{{ error }}</p>
       <button class="retry-button" @click="initData">重试</button>
     </div>
-    
+
     <!-- 书籍内容 -->
     <template v-else-if="book">
-      <book-cover 
+      <book-cover
         :title="book.title || '未知书名'"
         :author="book.author || '未知作者'"
         :category="book.category || '其他'"
@@ -28,18 +28,18 @@
         :publishDate="book.publishDate || ''"
         :description="book.description || '暂无描述'"
       />
-      
+
       <div class="chapter-list">
         <div class="list-header">
           <h3 class="list-title">目录</h3>
           <span class="chapter-count">{{ book.chapters?.length || 0 }}章</span>
         </div>
-        
+
         <div class="chapters-container">
           <template v-if="book.chapters && book.chapters.length > 0">
-            <div 
-              v-for="chapter in book.chapters" 
-              :key="chapter.id" 
+            <div
+              v-for="chapter in book.chapters"
+              :key="chapter.id"
               class="chapter-item"
               @click="navigateToChapter(chapter.id)"
             >
@@ -56,7 +56,7 @@
         </div>
       </div>
     </template>
-    
+
     <!-- 空状态 -->
     <div v-else class="empty-container">
       <van-empty description="暂无书籍信息" />
@@ -74,6 +74,7 @@ import { useRouter } from 'vue-router';
 import { useBookStore } from '../stores/bookStore';
 import { showToast } from 'vant';
 import BookCover from '../components/BookCover.vue';
+import { extractIdFromUrl } from '../utils/urlUtils';
 
 const router = useRouter();
 const bookStore = useBookStore();
@@ -92,7 +93,14 @@ const hasError = computed(() => !!error.value);
 const initData = async () => {
   try {
     localLoading.value = true;
-    
+    // 从URL中提取ID
+    const urlId = extractIdFromUrl();
+    if (urlId) {
+      console.log("从URL参数中获取到ID:", urlId);
+      // 设置到store中
+      await bookStore.setUniqueCodeId(urlId);
+    }
+
     // 设置一个超时，如果20秒后仍未加载完成，显示超时提示
     loadingTimer = setTimeout(() => {
       if (localLoading.value) {
@@ -102,14 +110,14 @@ const initData = async () => {
         });
       }
     }, 20000);
-    
+
     await bookStore.initBookData();
-    
+
     // 检查书籍和章节数据
     if (!book.value) {
       throw new Error('无法获取书籍数据');
     }
-    
+
     if (!book.value.chapters || book.value.chapters.length === 0) {
       showToast({
         message: '该书籍暂无章节内容',
@@ -126,7 +134,7 @@ const initData = async () => {
   } finally {
     clearTimeout(loadingTimer);
     localLoading.value = false;
-    
+
     // 延迟执行高度调整，确保DOM已完全渲染
     setTimeout(adjustChaptersContainerHeight, 300);
   }
@@ -147,14 +155,14 @@ const adjustChaptersContainerHeight = () => {
     const header = document.querySelector('.app-header');
     const bookCover = document.querySelector('.book-cover');
     const listHeader = document.querySelector('.list-header');
-    
+
     if (pageContainer && header && bookCover && listHeader) {
-      const otherElementsHeight = 
-        header.offsetHeight + 
-        bookCover.offsetHeight + 
-        listHeader.offsetHeight + 
+      const otherElementsHeight =
+        header.offsetHeight +
+        bookCover.offsetHeight +
+        listHeader.offsetHeight +
         40; // 额外边距和padding
-      
+
       // 计算章节容器应该的高度
       const availableHeight = windowHeight.value - otherElementsHeight;
       chaptersContainer.style.maxHeight = `${Math.max(availableHeight, 200)}px`;
@@ -171,13 +179,13 @@ const adjustChaptersContainerHeight = () => {
 //     });
 //     return;
 //   }
-  
+
 //   // 显示加载提示
 //   showToast({
 //     message: '正在加载章节...',
 //     duration: 800
 //   });
-  
+
 //   // 导航到章节详情页
 //   setTimeout(() => {
 //     router.push(`/detail/${chapterId}`);
@@ -192,19 +200,19 @@ const navigateToChapter = (chapterId) => {
     });
     return;
   }
-  
+
   console.log(`导航到章节，chapterId: ${chapterId}`);
-  
+
   // 显示加载提示
   showToast({
     message: '正在加载章节...',
     duration: 800
   });
-  
+
   // 从 store 获取当前的 uniqueCodeId
   const uniqueCodeId = bookStore.uniqueCodeId;
   console.log(`当前的 uniqueCodeId: ${uniqueCodeId}`);
-  
+
   // 导航到章节详情页，将 uniqueCodeId 作为查询参数传递
   setTimeout(() => {
     router.push({
@@ -213,7 +221,7 @@ const navigateToChapter = (chapterId) => {
     });
   }, 300);
 };
-  
+
 
 
 onBeforeMount(() => {
@@ -224,7 +232,7 @@ onBeforeMount(() => {
 onMounted(() => {
   // 进入列表页时清除当前章节
   bookStore.setCurrentChapter(null);
-  
+
   // 初始化书籍数据
   initData();
 });

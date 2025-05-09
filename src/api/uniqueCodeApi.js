@@ -16,7 +16,7 @@ const API_BASE_URL = 'http://113.45.143.70/prod-api';
 //     });
 
 //     console.log("API响应:", response);
-    
+
 //     // 检查响应状态
 //     if (response.data && response.data.code === 200 && response.data.data) {
 //       // 转换API响应为应用需要的数据结构
@@ -34,16 +34,18 @@ const API_BASE_URL = 'http://113.45.143.70/prod-api';
 export const getBookDataByChapterId = async (chapterId) => {
   try {
     // 从完整URL中提取ID部分（如果传入的是完整URL）
-    const extractedId = chapterId.includes('id=') 
-      ? chapterId.split('id=')[1].split('&')[0]
-      : chapterId;
+    const extractedId = chapterId.includes('id=')
+        ? chapterId.split('id=')[1].split('&')[0]
+        : chapterId;
+
+    console.log("提取的ID:", extractedId); // 添加调试日志
 
     const response = await axios.get(`${API_BASE_URL}/uniqueCode/manage/selectUniqueCodeById`, {
       params: { id: extractedId }
     });
 
     console.log("API响应:", response);
-    
+
     // 检查响应状态
     if (response.data && response.data.code === 200 && response.data.data) {
       // 转换API响应为应用需要的数据结构
@@ -72,7 +74,7 @@ const transformBookData = (apiData) => {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-  
+
   // 准备章节内容 - 这里将codeContent转换为阅读器所需的格式
   let chapterContent = null;
   if (apiData.codeContent) {
@@ -82,7 +84,7 @@ const transformBookData = (apiData) => {
       pages: [[{ type: 'text', data: apiData.codeContent || '暂无内容' }]]
     };
   }
-  
+
   const transformedData = {
     id: apiData.bookId || 1,
     title: apiData.bookName || '未知书名',
@@ -101,6 +103,6 @@ const transformBookData = (apiData) => {
 
   // 打印转换后的数据
   console.log('转换后的书籍数据:', transformedData);
-  
+
   return transformedData;
 };
