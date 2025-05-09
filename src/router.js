@@ -21,7 +21,14 @@ const routes = [
       title: '章节阅读'
     }
   },
-
+  {
+    path: '/pages/index/index',
+    component: BookDetail, // 使用BookDetail组件渲染
+    name: 'ScanDetail',
+    meta: {
+      title: '章节阅读'
+    }
+  },
   // 重定向任意未匹配路由到首页
   {
     path: '/:pathMatch(.*)*',
@@ -38,7 +45,13 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 设置文档标题
   document.title = to.meta.title || '带您阅智享阅读器';
-
+  // 特殊处理二维码链接
+  if (to.path === '/pages/index/index' && to.query.id) {
+    return next({
+      path: `/detail/${to.query.id}`,
+      replace: true
+    });
+  }
   // 继续导航
   next();
 });

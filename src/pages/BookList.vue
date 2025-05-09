@@ -68,15 +68,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeMount, computed, onUnmounted } from 'vue';
+import { onMounted, ref, onBeforeMount, computed, onUnmounted, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useBookStore } from '../stores/bookStore';
 import { showToast } from 'vant';
 import BookCover from '../components/BookCover.vue';
 import { extractIdFromUrl } from '../utils/urlUtils';
 
 const router = useRouter();
+const route = useRoute();
 const bookStore = useBookStore();
 const { book, loading, error } = storeToRefs(bookStore);
 const windowHeight = ref(0);
@@ -88,20 +89,47 @@ let loadingTimer = null;
 // 计算属性
 const isLoading = computed(() => loading.value || localLoading.value);
 const hasError = computed(() => !!error.value);
+// 添加一个专门处理URL参数的函数
+const handleUrlParams = async () => {
+  try {
+    // 从URL hash中提取ID
+    const hashPart = window.location.hash;
+    if (hashPart && hashPart.includes('id=')) {
+      const queryString = hashPart.split('?')[1] || '';
+      const urlParams = new URLSearchParams(queryString);
+      const hashId = urlParams.get('id');
 
+      if (hashId) {
+        console.log("从URL hash中提取ID:", hashId);
+
+        // 设置ID到store
+        await bookStore.setUniqueCodeId(hashId);
+
+        // 使用导航而不是nextTick
+        router.push(`/detail/${hashId}`);
+        return true; // 表示已处理参数
+      }
+    }
+
+    return false; // 表示没有找到参数
+  } catch (error) {
+    console.error("处理URL参数时出错:", error);
+    return false;
+  }
+};
 // 初始化数据
 const initData = async () => {
   try {
     localLoading.value = true;
-    // 从URL中提取ID
-    const urlId = extractIdFromUrl();
-    if (urlId) {
-      console.log("从URL参数中获取到ID:", urlId);
-      // 设置到store中
-      await bookStore.setUniqueCodeId(urlId);
+
+    // 先处理URL参数，如果导航到章节页则不需要加载目录
+    const paramHandled = await handleUrlParams();
+    if (paramHandled) {
+      localLoading.value = false;
+      return; // 已经处理了参数并导航，不需要继续加载目录
     }
 
-    // 设置一个超时，如果20秒后仍未加载完成，显示超时提示
+    // 设置加载超时提示
     loadingTimer = setTimeout(() => {
       if (localLoading.value) {
         showToast({
@@ -111,6 +139,7 @@ const initData = async () => {
       }
     }, 20000);
 
+    // 正常加载书籍目录数据
     await bookStore.initBookData();
 
     // 检查书籍和章节数据

@@ -8,15 +8,15 @@
           <div class="category-controls-wrapper">
             <div class="book-category">{{ book?.category || '' }}</div>
             <div class="aligned-controls">
-              <button class="control-icon-btn" 
-                      :class="{ 'playing': isVoiceReading, 'paused': audioState.paused }" 
-                      @click="toggleVoiceReading" 
+              <button class="control-icon-btn"
+                      :class="{ 'playing': isVoiceReading, 'paused': audioState.paused }"
+                      @click="toggleVoiceReading"
                       title="语音朗读">
                 <van-icon :name="getAudioPlayerIcon()" />
                 <span class="btn-status-indicator" v-if="isVoiceReading"></span>
               </button>
-              <button class="control-icon-btn home-btn" 
-                      @click="goToIndex" 
+              <button class="control-icon-btn home-btn"
+                      @click="goToIndex"
                       title="返回目录">
                 <van-icon name="home-o" />
               </button>
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 内容区域 -->
     <div v-if="chapter" class="reader-content">
       <div class="page-perspective-container">
@@ -39,15 +39,15 @@
           <div :key="currentPage" class="page-content" ref="pageContentRef">
             <div v-for="(item, index) in currentPageContent" :key="index" class="content-item">
               <!-- 文本内容 -->
-              <div 
-                v-if="item.type === 'text'" 
+              <div
+                v-if="item.type === 'text'"
                 class="text-content"
                 :class="{ 'text-selected': selectedParagraphIndex === index }"
                 :data-item-index="index"
                 v-html="item.data"
                 @click="handleParagraphClick($event, item, index)"
               ></div>
-              
+
               <!-- 图片内容 -->
               <div v-else-if="item.type === 'image'" class="image-content">
                 <div class="media-label"><van-icon name="photo-o" /> 图片</div>
@@ -59,7 +59,7 @@
                 </div>
                 <!-- <div class="image-caption" v-if="item.caption">{{ item.caption }}</div> -->
               </div>
-              
+
               <!-- 视频内容 -->
               <div v-else-if="item.type === 'video'" class="video-content">
                 <div class="media-label"><van-icon name="video-o" /> 视频</div>
@@ -69,7 +69,7 @@
                 </video>
                 <!-- <div class="video-title">{{ item.title || '视频' }}</div> -->
               </div>
-              
+
               <!-- 音频内容 -->
               <div v-else-if="item.type === 'audio'" class="audio-content">
                 <div class="media-label"><van-icon name="music-o" /> 音频</div>
@@ -87,7 +87,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- 文档内容 -->
               <div v-else-if="item.type === 'document'" class="document-content">
                 <div class="media-label"><van-icon name="description" /> 文档</div>
@@ -105,7 +105,7 @@
             </div>
           </div>
         </transition>
-        
+
         <!-- 虚拟下一页 (用于翻页动画) -->
         <div v-if="showVirtualPage" class="virtual-page" :class="virtualPageClass" ref="virtualPageRef">
           <div v-for="(item, index) in virtualPageContent" :key="index" class="content-item">
@@ -118,38 +118,38 @@
         </div>
       </div>
     </div>
-    
+
     <div v-else class="loading-state">
       <van-loading type="spinner" color="#8D1D21" />
       <p>正在加载章节内容...</p>
     </div>
-    
+
     <!-- 固定在底部的页面导航 -->
     <div class="page-navigation" v-if="chapter">
-      <button 
-        class="page-nav-btn prev-btn" 
+      <button
+        class="page-nav-btn prev-btn"
         :disabled="!chapter || currentPage === 0"
         @click="prevPage"
       >
         上一页
       </button>
-      
+
       <div class="page-indicator">
         <span>{{ currentPage + 1 }}/{{ chapter.totalPages }}</span>
       </div>
-      
-      <button 
-        class="page-nav-btn next-btn" 
+
+      <button
+        class="page-nav-btn next-btn"
         :disabled="!chapter || currentPage >= (chapter?.totalPages - 1)"
         @click="nextPage"
       >
         下一页
       </button>
     </div>
-    
+
     <!-- 图片查看器 -->
     <div class="image-viewer" v-if="showImageViewer" @click="closeImageViewer">
-      <div class="image-viewer-content" 
+      <div class="image-viewer-content"
            :style="{ transform: `translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${imageZoom})` }"
            @mousedown="startDrag"
            @touchstart="startDrag"
@@ -251,14 +251,14 @@ const addIconPolyfillScript = () => {
   const script = document.createElement('script');
   script.type = 'text/javascript';
   script.id = 'ue-icon-polyfill';
-  
+
   // 设置脚本内容
   script.textContent = `
     // UEditor图标修复脚本
     (function() {
       // 透明GIF的base64编码
       const transparentGif = 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-      
+
       // 文件类型图标映射
       const fileTypeColors = {
         'pdf': 'rgba(226, 55, 39, 0.1)',
@@ -271,7 +271,7 @@ const addIconPolyfillScript = () => {
         'pptx': 'rgba(209, 72, 54, 0.1)',
         'default': 'rgba(37, 71, 106, 0.1)'
       };
-      
+
       // 1. 拦截XMLHttpRequest对象
       const origXHROpen = XMLHttpRequest.prototype.open;
       XMLHttpRequest.prototype.open = function() {
@@ -282,17 +282,17 @@ const addIconPolyfillScript = () => {
             this.abort();
           }
         });
-        
+
         // 检查是否是图标URL
         const url = arguments[1];
         if (url && typeof url === 'string' && url.includes('/static/UE/dialogs/attachment/fileTypeImages/icon_')) {
           // 替换为内存中的数据URL
           arguments[1] = 'data:image/gif;base64,' + transparentGif;
         }
-        
+
         return origXHROpen.apply(this, arguments);
       };
-      
+
       // 2. 拦截Image对象
       const origImageSrc = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
       Object.defineProperty(Image.prototype, 'src', {
@@ -300,7 +300,7 @@ const addIconPolyfillScript = () => {
           if (value && typeof value === 'string' && value.includes('/static/UE/dialogs/attachment/fileTypeImages/icon_')) {
             // 提取文件类型
             const fileType = value.split('icon_')[1]?.split('.')[0] || 'default';
-            
+
             // 设置内联样式
             this.style.width = '16px';
             this.style.height = '16px';
@@ -308,18 +308,18 @@ const addIconPolyfillScript = () => {
             this.style.backgroundColor = fileTypeColors[fileType] || fileTypeColors.default;
             this.style.borderRadius = '50%';
             this.style.verticalAlign = 'middle';
-            
+
             // 设置为透明GIF
             value = 'data:image/gif;base64,' + transparentGif;
           }
-          
+
           return origImageSrc.set.call(this, value);
         },
         get: function() {
           return origImageSrc.get.call(this);
         }
       });
-      
+
       // 3. 拦截fetch API
       const origFetch = window.fetch;
       window.fetch = function(input, init) {
@@ -328,17 +328,17 @@ const addIconPolyfillScript = () => {
           return Promise.resolve(
             new Response(
               Uint8Array.from(atob(transparentGif), c => c.charCodeAt(0)),
-              { 
-                status: 200, 
+              {
+                status: 200,
                 headers: new Headers({ 'Content-Type': 'image/gif' })
               }
             )
           );
         }
-        
+
         return origFetch.apply(this, arguments);
       };
-      
+
       // 4. 添加样式
       const style = document.createElement('style');
       style.textContent = \`
@@ -350,38 +350,38 @@ const addIconPolyfillScript = () => {
           vertical-align: middle !important;
           border-radius: 50% !important;
         }
-        
+
         /* 特定文件类型样式 */
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_pdf.gif"] {
           background-color: rgba(226, 55, 39, 0.1) !important;
         }
-        
+
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_doc.gif"],
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_docx.gif"] {
           background-color: rgba(43, 87, 154, 0.1) !important;
         }
-        
+
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_txt.gif"] {
           background-color: rgba(77, 77, 77, 0.1) !important;
         }
-        
+
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_xls.gif"],
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_xlsx.gif"] {
           background-color: rgba(33, 115, 70, 0.1) !important;
         }
-        
+
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_ppt.gif"],
         img[src*="/static/UE/dialogs/attachment/fileTypeImages/icon_pptx.gif"] {
           background-color: rgba(209, 72, 54, 0.1) !important;
         }
       \`;
-      
+
       document.head.appendChild(style);
-      
+
       console.log('UEditor图标修复已启用');
     })();
   `;
-  
+
   // 立即添加到页面头部并执行
   document.head.appendChild(script);
 };
@@ -390,7 +390,7 @@ const addIconPolyfillScript = () => {
 addIconPolyfillScript();// 扩展获取文档图标名称函数，支持更多类型
 const getDocumentIconName = (format) => {
   if (!format) return DOCUMENT_ICON_MAP.default;
-  
+
   const formatLower = String(format).toLowerCase();
   return DOCUMENT_ICON_MAP[formatLower] || DOCUMENT_ICON_MAP.default;
 };
@@ -398,9 +398,9 @@ const getDocumentIconName = (format) => {
 // 获取文档类型函数
 const getDocumentType = (format) => {
   if (!format) return 'generic';
-  
+
   const formatLower = String(format).toLowerCase();
-  
+
   // 为不同文件类型返回不同的类型名
   if (formatLower === 'pdf') return 'pdf';
   if (['doc', 'docx'].includes(formatLower)) return 'word';
@@ -410,7 +410,7 @@ const getDocumentType = (format) => {
   if (['md', 'markdown'].includes(formatLower)) return 'markdown';
   if (['json', 'xml', 'html', 'htm'].includes(formatLower)) return 'code';
   if (['zip', 'rar', '7z'].includes(formatLower)) return 'archive';
-  
+
   // 默认类型
   return 'generic';
 };
@@ -428,10 +428,10 @@ const audioState = reactive({
 // 设备检测
 const detectDevice = () => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  
+
   // 检测是否为移动设备
   const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-  
+
   // 检测特定浏览器
   const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
   const isAndroid = /Android/i.test(userAgent);
@@ -439,10 +439,10 @@ const detectDevice = () => {
   const isChrome = /Chrome/i.test(userAgent);
   const isFirefox = /Firefox/i.test(userAgent);
   const isWeChat = /MicroMessenger/i.test(userAgent);
-  
+
   // 检测是否支持特定API
   const supportsSpeechSynthesis = 'speechSynthesis' in window;
-  
+
   return {
     isMobileDevice,
     isIOS,
@@ -464,14 +464,14 @@ const ensureVoicesLoaded = () => {
   return new Promise((resolve) => {
     // 获取当前可用的声音列表
     let voices = speechSynthesis.value.getVoices();
-    
+
     // 如果声音列表已加载，直接返回
     if (voices && voices.length > 0) {
       console.log(`已加载${voices.length}个语音`);
       resolve(voices);
       return;
     }
-    
+
     // 如果声音列表为空，监听voiceschanged事件
     console.log("等待语音列表加载...");
     const voicesChangedHandler = () => {
@@ -480,10 +480,10 @@ const ensureVoicesLoaded = () => {
       speechSynthesis.value.removeEventListener('voiceschanged', voicesChangedHandler);
       resolve(voices);
     };
-    
+
     // 添加事件监听
     speechSynthesis.value.addEventListener('voiceschanged', voicesChangedHandler);
-    
+
     // 设置超时保障，确保即使事件未触发也能继续
     setTimeout(() => {
       if (!voices || voices.length === 0) {
@@ -498,13 +498,13 @@ const ensureVoicesLoaded = () => {
 // 应用中文男声设置
 const applyMaleVoiceSettings = (utterance) => {
   if (!utterance) return;
-  
+
   // 设置语音为中文
   utterance.lang = 'zh-CN';
-  
+
   // 获取所有可用声音
   const voices = speechSynthesis.value.getVoices();
-  
+
   // 查找中文男声的优先顺序
   const voicePriorities = [
     // 查找中文男声
@@ -516,14 +516,14 @@ const applyMaleVoiceSettings = (utterance) => {
     // 最后备选：任何声音
     (v) => true
   ];
-  
+
   // 按优先级查找合适的声音
   let selectedVoice = null;
   for (const priorityCheck of voicePriorities) {
     selectedVoice = voices.find(priorityCheck);
     if (selectedVoice) break;
   }
-  
+
   // 应用找到的声音
   if (selectedVoice) {
     console.log(`使用语音: ${selectedVoice.name} (${selectedVoice.lang})`);
@@ -531,16 +531,16 @@ const applyMaleVoiceSettings = (utterance) => {
   } else {
     console.warn("未找到合适的语音，使用默认设置");
   }
-  
+
   // 降低语速 (默认是1，范围0.1-10，降低为0.8)
   utterance.rate = 0.8;
-  
+
   // 增加音调使声音更有磁性 (默认是1，范围0-2)
   utterance.pitch = 0.9;
-  
+
   // 增加音量，确保在移动设备上足够响亮
   utterance.volume = 1.0; // 最大音量
-  
+
   return utterance;
 };
 
@@ -556,17 +556,17 @@ const showNotification = (message) => {
     </svg>
     ${message}
   `;
-  
+
   // 添加到文档
   document.body.appendChild(notificationEl);
-  
+
   // 2.5秒后移除通知
   setTimeout(() => {
     if (document.body.contains(notificationEl)) {
       notificationEl.style.opacity = '0';
       notificationEl.style.transform = 'translate(-50%, -20px)';
       notificationEl.style.transition = 'opacity 0.5s, transform 0.5s';
-      
+
       // 动画结束后移除元素
       setTimeout(() => {
         if (document.body.contains(notificationEl)) {
@@ -592,7 +592,7 @@ const handleParagraphClick = (event, item, index) => {
 
   // 设置当前选中的段落索引
   selectedParagraphIndex.value = index;
-  
+
   // 保存当前内容元素
   readingState.contentElement = event.currentTarget;
 };
@@ -604,13 +604,13 @@ const toggleVoiceReading = () => {
     stopVoiceReading();
     return;
   }
-  
+
   // 检查是否有选中的段落
   if (selectedParagraphIndex.value === -1) {
     showNotification("请选择需要播报的内容");
     return;
   }
-  
+
   // 开始朗读选中的段落
   startVoiceReading();
 };
@@ -621,50 +621,50 @@ const startVoiceReading = () => {
   if (speechUtterance.value) {
     speechSynthesis.value.cancel();
   }
-  
+
   // 获取选中的段落
-  const selectedItem = currentPageContent.value.find((item, idx) => 
+  const selectedItem = currentPageContent.value.find((item, idx) =>
     idx === selectedParagraphIndex.value && item.type === 'text'
   );
-  
+
   if (!selectedItem) {
     console.log("未找到可朗读的文本内容");
     return;
   }
-  
+
   try {
     // 提取纯文本
     const plainText = selectedItem.data.replace(/<[^>]*>/g, '');
-    
+
     if (!plainText || plainText.trim() === '') {
       console.log("选中的文本为空");
       return;
     }
-    
+
     // 更新状态
     isVoiceReading.value = true;
     audioState.paused = false;
-    
+
     // 创建语音合成对象
     speechUtterance.value = new SpeechSynthesisUtterance(plainText);
-    
+
     // 加载语音和应用设置
     ensureVoicesLoaded().then(() => {
       // 应用语音设置
       applyMaleVoiceSettings(speechUtterance.value);
-      
+
       // 设置结束事件处理
       speechUtterance.value.onend = () => {
         isVoiceReading.value = false;
         audioState.paused = false;
       };
-      
+
       // 设置错误事件处理
       speechUtterance.value.onerror = (event) => {
         console.error("语音合成错误:", event);
         isVoiceReading.value = false;
       };
-      
+
       // 开始朗读
       speechSynthesis.value.speak(speechUtterance.value);
     });
@@ -691,11 +691,11 @@ const initSpeechSynthesis = () => {
     console.error("此浏览器不支持Web Speech API");
     return false;
   }
-  
+
   try {
     // 使用全局引用
     speechSynthesis.value = window.speechSynthesis;
-    
+
     // 尝试初始化和激活语音系统
     const testUtterance = new SpeechSynthesisUtterance("测试");
     testUtterance.volume = 0.01; // 非常低的音量
@@ -703,13 +703,13 @@ const initSpeechSynthesis = () => {
     testUtterance.onend = () => {
       console.log("语音合成初始化成功");
     };
-    
+
     // 取消可能存在的语音队列
     speechSynthesis.value.cancel();
-    
+
     // 尝试激活语音合成
     speechSynthesis.value.speak(testUtterance);
-    
+
     return true;
   } catch (error) {
     console.error("语音合成初始化失败:", error);
@@ -724,7 +724,7 @@ const stopAllMedia = () => {
     currentAudio.value.pause();
     isAudioPlaying.value = false;
   }
-  
+
   // 停止语音朗读
   stopVoiceReading();
 };
@@ -748,7 +748,7 @@ const loadChapterContent = async (chapterId) => {
       showToast('无效的章节ID');
       return;
     }
-    
+
     // 显示加载状态
     showLoadingToast({
       message: '加载章节内容...',
@@ -760,20 +760,20 @@ const loadChapterContent = async (chapterId) => {
     stopAllMedia();
     showVirtualPage.value = false;
     selectedParagraphIndex.value = -1;
-    
+
     // 调用 store 的方法加载章节内容
     // 现在直接传递 chapterId - store会使用它来获取章节内容
     await bookStore.loadChapter(chapterId);
-    
+
     // 关闭加载提示
     closeToast();
-    
+
     // 滚动到顶部
     window.scrollTo(0, 0);
   } catch (error) {
     console.error('加载章节内容失败:', error);
     closeToast();
-    
+
     showToast({
       message: `加载章节失败: ${error.message || '未知错误'}`,
       type: 'fail'
@@ -784,7 +784,7 @@ const loadChapterContent = async (chapterId) => {
 // 预加载虚拟页面内容
 const preloadVirtualPage = (direction) => {
   if (!chapter.value || !chapter.value.pages) return null;
-  
+
   // 确定需要加载的页面索引
   let targetPage;
   if (direction === 'next' && currentPage.value < chapter.value.totalPages - 1) {
@@ -797,7 +797,7 @@ const preloadVirtualPage = (direction) => {
     // 无效的翻页方向或已经在边界页
     return null;
   }
-  
+
   try {
     // 加载目标页面内容
     virtualPageContent.value = chapter.value.pages[targetPage] || [];
@@ -812,25 +812,19 @@ const preloadVirtualPage = (direction) => {
 watch(() => route.params.chapterId, (newId) => {
   if (newId) {
     console.log('路由参数中的章节ID:', newId);
-    
-    // 检查路由中是否有 uniqueCodeId 参数，如果有则先设置
-    const routeUniqueCodeId = route.query.uniqueCodeId;
-    if (routeUniqueCodeId) {
-      console.log('从路由获取的 uniqueCodeId:', routeUniqueCodeId);
-      // 设置 uniqueCodeId 并在完成后加载章节
-      bookStore.setUniqueCodeId(routeUniqueCodeId)
-        .then(() => {
-          loadChapterContent(newId);
-        })
-        .catch(error => {
-          console.error('设置 uniqueCodeId 失败:', error);
-          // 仍然尝试加载章节
-          loadChapterContent(newId);
-        });
-    } else {
-      // 直接加载章节内容
-      loadChapterContent(newId);
-    }
+
+    // 这里直接使用chapterId加载章节，不需要再提取
+    loadChapterContent(newId);
+  }
+}, { immediate: true });
+
+// 额外监听查询参数，处理直接通过查询字符串进入的情况
+watch(() => route.query.id, (queryId) => {
+  if (queryId && !route.params.chapterId) {
+    console.log('从查询参数获取ID:', queryId);
+
+    // 如果有查询参数ID但没有路径参数，则使用查询参数
+    loadChapterContent(queryId);
   }
 }, { immediate: true });
 
@@ -842,22 +836,22 @@ const prevPage = () => {
     if (isVoiceReading.value) {
       stopVoiceReading();
     }
-    
+
     // 预加载上一页内容，准备动画
     virtualPageContent.value = chapter.value.pages[currentPage.value] || [];
     virtualPageClass.value = 'virtual-page-prev';
-    
+
     // 确保在下一帧再显示虚拟页
     nextTick(() => {
       showVirtualPage.value = true;
-      
+
       // 设置翻页动画方向
       pageTransitionName.value = 'page-flip-left';
-      
+
       // 滚动到顶部和重置段落选择
       window.scrollTo(0, 0);
       selectedParagraphIndex.value = -1;
-      
+
       // 等待页面渲染完成后再隐藏虚拟页
       setTimeout(() => {
         showVirtualPage.value = false;
@@ -873,21 +867,21 @@ const nextPage = () => {
     if (isVoiceReading.value) {
       stopVoiceReading();
     }
-    
+
     // 预加载下一页内容，准备动画
     preloadVirtualPage('next');
-    
+
     // 设置翻页动画方向
     pageTransitionName.value = 'page-flip-right';
-    
+
     // 先显示虚拟页，确保DOM已更新
     nextTick(() => {
       showVirtualPage.value = true;
-      
+
       // 滚动到顶部和重置段落选择
       window.scrollTo(0, 0);
       selectedParagraphIndex.value = -1;
-      
+
       // 等待页面渲染完成后再隐藏虚拟页
       setTimeout(() => {
         showVirtualPage.value = false;
@@ -934,10 +928,10 @@ const resetView = () => {
 const startDrag = (event) => {
   // 只有放大状态才能拖动
   if (imageZoom.value <= 1) return;
-  
+
   event.preventDefault();
   isDragging.value = true;
-  
+
   // 获取初始位置 (支持鼠标和触摸)
   if (event.type === 'mousedown') {
     dragStart.x = event.clientX;
@@ -946,11 +940,11 @@ const startDrag = (event) => {
     dragStart.x = event.touches[0].clientX;
     dragStart.y = event.touches[0].clientY;
   }
-  
+
   // 保存当前位置作为基准
   lastPosition.x = imagePosition.x;
   lastPosition.y = imagePosition.y;
-  
+
   // 添加移动和结束事件监听
   if (event.type === 'mousedown') {
     window.addEventListener('mousemove', handleDrag);
@@ -963,9 +957,9 @@ const startDrag = (event) => {
 
 const handleDrag = (event) => {
   if (!isDragging.value) return;
-  
+
   let currentX, currentY;
-  
+
   // 获取当前位置 (支持鼠标和触摸)
   if (event.type === 'mousemove') {
     currentX = event.clientX;
@@ -975,11 +969,11 @@ const handleDrag = (event) => {
     currentX = event.touches[0].clientX;
     currentY = event.touches[0].clientY;
   }
-  
+
   // 计算移动距离
   const deltaX = currentX - dragStart.x;
   const deltaY = currentY - dragStart.y;
-  
+
   // 应用新位置
   imagePosition.x = lastPosition.x + deltaX;
   imagePosition.y = lastPosition.y + deltaY;
@@ -987,7 +981,7 @@ const handleDrag = (event) => {
 
 const endDrag = () => {
   isDragging.value = false;
-  
+
   // 移除事件监听
   window.removeEventListener('mousemove', handleDrag);
   window.removeEventListener('mouseup', endDrag);
@@ -1027,7 +1021,7 @@ const toggleAudio = (src) => {
       audioSrc.value = src;
       currentAudio.value = new Audio(src);
       audioProgress.value = 0;
-      
+
       currentAudio.value.addEventListener('timeupdate', updateAudioProgress);
     }
     playAudio();
@@ -1078,7 +1072,7 @@ const handleVisibilityChange = () => {
 const updateNavigationVisibility = () => {
   const navElement = document.querySelector('.page-navigation');
   const contentElement = document.querySelector('.reader-content');
-  
+
   if (navElement && contentElement) {
     // 始终保持导航栏可见，并确保在底部
     navElement.style.position = 'fixed';
@@ -1093,15 +1087,15 @@ const updateNavigationVisibility = () => {
 const adjustContentHeight = () => {
   // 获取视口高度
   const viewportHeight = window.innerHeight;
-  
+
   // 获取头部高度
   const headerElement = document.querySelector('.reader-header');
   const headerHeight = headerElement ? headerElement.offsetHeight : 0;
-  
+
   // 获取导航栏高度
   const navElement = document.querySelector('.page-navigation');
   const navHeight = navElement ? navElement.offsetHeight : 0;
-  
+
   // 计算内容区应有的高度 - 减去头部、导航栏和边距
   const contentHeight = viewportHeight - headerHeight - navHeight - 25;
 
@@ -1109,7 +1103,7 @@ const adjustContentHeight = () => {
   const contentElement = document.querySelector('.reader-content');
   if (contentElement) {
     contentElement.style.height = `${contentHeight}px`;
-    
+
     // 确保内容区有足够的底部边距，避免被导航栏遮挡
     contentElement.style.marginBottom = `${navHeight + 10}px`;
   }
@@ -1119,7 +1113,7 @@ const adjustContentHeight = () => {
 onMounted(() => {
   // 监听窗口大小变化，调整页面布局
   window.addEventListener('resize', adjustContentHeight);
-  
+
   // 在组件挂载后先计算一次页面布局
   nextTick(() => {
     adjustContentHeight();
@@ -1133,25 +1127,25 @@ onMounted(() => {
     } else {
       console.warn("此设备不支持语音合成API");
     }
-    
+
     // 监听滚动事件，确保导航栏保持在底部
     const contentElement = document.querySelector('.reader-content .page-perspective-container');
     if (contentElement) {
       contentElement.addEventListener('scroll', updateNavigationVisibility);
     }
-    
+
     // 如果支持 ResizeObserver API，使用它来监听内容区域的变化
     if ('ResizeObserver' in window) {
       const resizeObserver = new ResizeObserver(() => {
         adjustContentHeight();
       });
-      
+
       if (contentElement) {
         resizeObserver.observe(contentElement);
       }
     }
   });
-  
+
   // 设置页面可见性变化监听，用于在切换回页面时恢复语音状态
   document.addEventListener('visibilitychange', handleVisibilityChange);
 });
@@ -1164,21 +1158,21 @@ const downloadDocument = async (doc) => {
       forbidClick: true,
       duration: 0
     });
-    
+
     // 获取文件内容
     const response = await fetch(doc.src);
     if (!response.ok) throw new Error(`获取文件失败: ${response.status}`);
-    
+
     // 获取文件blob
     const blob = await response.blob();
-    
+
     // 确定正确的MIME类型
     let mimeType = 'application/octet-stream'; // 默认二进制流
     let downloadBlob;
-    
+
     // 根据文件格式设置正确的MIME类型
     const format = String(doc.format || '').toLowerCase();
-    
+
     switch (format) {
       case 'pdf':
         mimeType = 'application/pdf';
@@ -1244,29 +1238,29 @@ const downloadDocument = async (doc) => {
         mimeType = 'application/x-7z-compressed';
         break;
     }
-    
+
     // 如果没有特殊处理，使用原始blob带正确的MIME类型
     if (!downloadBlob) {
       downloadBlob = new Blob([blob], { type: mimeType });
     }
-    
+
     // 创建下载链接
     const url = URL.createObjectURL(downloadBlob);
     const a = window.document.createElement('a');
     a.href = url;
-    
+
     // 设置下载文件名
     const filename = doc.title || '下载文件';
     a.download = `${filename}.${format}`;
-    
+
     // 添加到文档并点击
     window.document.body.appendChild(a);
     a.click();
-    
+
     // 清理
     window.document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     closeToast();
     showToast({
       message: '开始下载',
@@ -1285,14 +1279,14 @@ const downloadDocument = async (doc) => {
 // 组件卸载时清理资源
 onUnmounted(() => {
   stopAllMedia();
-  
+
   if (currentAudio.value) {
     currentAudio.value.removeEventListener('timeupdate', updateAudioProgress);
   }
-  
+
   window.removeEventListener('resize', adjustContentHeight);
   document.removeEventListener('visibilitychange', handleVisibilityChange);
-  
+
   // 移除滚动事件监听
   const contentElement = document.querySelector('.reader-content .page-perspective-container');
   if (contentElement) {
@@ -1597,8 +1591,8 @@ onUnmounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 8px var(--shadow-color);
   position: relative;
-  background-image: 
-    linear-gradient(rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 1%), 
+  background-image:
+    linear-gradient(rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 1%),
     linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
   background-size: 100% 24px;
   flex: 1;
@@ -2410,53 +2404,53 @@ onUnmounted(() => {
   .reader-header {
     padding: 8px 10px;
   }
-  
+
   .header-left {
     flex: 0.5 0 50%;
   }
-  
+
   .header-center {
     flex: 0 0 50%;
   }
-  
+
   .header-right {
     flex: 0.5 0 25%;
   }
-  
+
   .reader-content {
     margin: 5px;
     padding: 10px;
     margin-bottom: 60px;
   }
-  
+
   .chapter-title {
     font-size: 14px;
   }
-  
+
   .book-name {
     font-size: 11px;
   }
-  
+
   .book-author {
     font-size: 10px;
     margin-top: 5px;
   }
-  
+
   .text-content {
     font-size: 14px;
     line-height: 1.7;
   }
-  
+
   .page-nav-btn {
     padding: 3px 8px;
     font-size: 12px;
   }
-  
+
   .page-navigation {
     height: 50px;
     padding: 8px 10px;
   }
-  
+
   .page-indicator {
     font-size: 12px;
   }
