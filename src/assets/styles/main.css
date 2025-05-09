@@ -1,0 +1,137 @@
+:root {
+    /* 陕西文化色彩 */
+    --primary-color: #8D1D21; /* 秦砖汉瓦的红色 */
+    --secondary-color: #F2CD88; /* 古城墙黄色 */
+    --accent-color: #25476A; /* 山水画中的蓝色 */
+    --background-color: #F8F5F0; /* 宣纸底色 */
+    --text-color: #333333;
+    --border-color: #D9C7A7; /* 传统家具木色 */
+    --header-color: #5A3D2B; /* 古建筑木色 */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --tag-bg: #f4e9da;
+    --author-badge-bg: #f7e2d3;
+    --category-badge-bg: #e0ece9;
+    --chapter-hover: #f9f3ea;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  
+  .page-container {
+    padding: 12px;
+    min-height: 100vh;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  
+  .page-title {
+    color: var(--primary-color);
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+    position: relative;
+    letter-spacing: 1px;
+  }
+  
+  .page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: var(--primary-color);
+  }
+  
+  .card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+  }
+  
+  button, .btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  button:hover, .btn:hover {
+    opacity: 0.9;
+  }
+  
+  .text-primary {
+    color: var(--primary-color);
+  }
+  
+  .text-secondary {
+    color: var(--secondary-color);
+  }
+  
+  .text-accent {
+    color: var(--accent-color);
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-right: 6px;
+    line-height: 1.4;
+  }
+  
+  .badge-author {
+    background-color: var(--author-badge-bg);
+    color: #a85d53;
+  }
+  
+  .badge-category {
+    background-color: var(--category-badge-bg);
+    color: #2d6a62;
+  }
+  
+  /* 创建类似书籍翻页效果的过渡动画 */
+  .page-enter-active,
+  .page-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  
+  .page-enter-from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  
+  .page-leave-to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  

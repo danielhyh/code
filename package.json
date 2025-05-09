@@ -1,0 +1,26 @@
+{
+    "name": "shaanxi-book-reader",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite serve"
+    },
+    "dependencies": {
+        "@vant/auto-import-resolver": "^1.0.1",
+        "axios": "^1.9.0",
+        "mammoth": "^1.9.0",
+        "pdfjs-dist": "^3.4.120",
+        "pinia": "^2.1.6",
+        "postcss-px-to-viewport": "^1.1.1",
+        "unplugin-vue-components": "^28.5.0",
+        "vant": "^4.9.19",
+        "vue-router": "^4.5.1"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^4.3.4",
+        "vite": "^4.5.14"
+    }
+}
